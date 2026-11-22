@@ -1,0 +1,41 @@
+name: MAWAQIT-Gebetszeiten holen
+
+on:
+  schedule:
+    - cron: "23 1 * * *"   # every night, 01:23 UTC (02:23 in winter, 03:23 in summer)
+  workflow_dispatch:        # "Run workflow" button for a manual run
+
+permissions:
+  contents: write           # allowed to commit prayer-times.json
+
+concurrency:
+  group: mawaqit
+  cancel-in-progress: false
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Zeiten von MAWAQIT holen
+        env:
+          MAWAQIT_SLUG: ${{ vars.MAWAQIT_SLUG || 'msjd-lzytwn-seituna-moschee-berlin-14059-germany' }}
+        run: python fetch_mawaqit.py
+
+      - name: Speichern, wenn sich etwas geändert hat
+        run: |
+          git config user.name  "mawaqit-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add prayer-times.json
+          if git diff --cached --quiet; then
+            echo "Keine Änderung."
+          else
+            git commit -m "MAWAQIT-Gebetszeiten aktualisiert"
+            git push
+          fi
