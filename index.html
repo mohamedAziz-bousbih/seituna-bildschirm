@@ -169,6 +169,7 @@ header .logoR{height:80px;width:auto}
 .it{position:relative;display:flex;align-items:center;gap:18px;padding:12px 18px;border-radius:18px;background:rgba(255,255,255,.075);border:2px solid transparent;min-height:92px}
 .it .chip{flex:none;width:186px;text-align:center;border-radius:12px;background:rgba(255,255,255,.12);padding:6px 4px;font-size:27px;font-weight:800;line-height:1.2;direction:ltr}
 .it .chip.arc{direction:rtl;font-family:var(--ar);font-size:24px}
+.it .chip.rtlt,.ri .chip.rtlt{direction:rtl}
 .it .chip .two{display:block;font-size:24px}
 .it .txt{flex:1;min-width:0}
 .it .t{font-size:30px;font-weight:800;line-height:1.25}
@@ -195,7 +196,8 @@ header .logoR{height:80px;width:auto}
 .it.now .s{color:var(--olive)}
 .it.next{border-color:rgba(243,213,126,.55)}
 .badge{position:absolute;top:-13px;font-size:16px;font-weight:850;letter-spacing:1.5px;padding:2px 12px;border-radius:20px;white-space:nowrap}
-.it[dir=ltr] .badge{right:16px} .it[dir=rtl] .badge{left:16px}
+.it[dir=ltr] .badge{left:16px} .it[dir=rtl] .badge{right:16px}   /* above the time chip, never over the title */
+#items .it.now,#items .it.next,#items.dense .it.now,#items.dense .it.next{padding-top:22px}   /* room for the badge so it never covers the time */
 .badge.now{background:var(--gold);color:var(--ink)}
 .badge.next{background:var(--g9);color:var(--gold-l);border:2px solid rgba(243,213,126,.6)}
 
@@ -326,7 +328,7 @@ const DAYS = { // JS getDay(): 0 = Sonntag … 6 = Samstag
     {dir:'ltr', t:'Islamunterricht auf Deutsch', s:'Islamisches Wissen vertiefen · unsere Religion besser verstehen', slots:[['18:00','19:30']]},
   ]},
   1:{de:'Montag', ar:'الاثنين', short:'Mo', items:[
-    {dir:'ltr', t:'Qur’an – Anfängerkurs', s:'für deutschsprachige Geschwister · arabische Buchstaben · Lesen lernen bis zum flüssigen Lesen aus dem Mushaf', slots:[['17:00','19:00']]},
+    {dir:'ltr', t:'Qur’an – Anfängerkurs', s:'für deutschsprachige Geschwister · arabische Buchstaben · Lesen lernen bis zum fließenden Lesen aus dem Mushaf', slots:[['17:00','19:00']]},
   ]},
   2:{de:'Dienstag', ar:'الثلاثاء', short:'Di', items:[
     {dir:'rtl', t:'مجلس التفسير والتدبر', after:'isha'},
@@ -357,7 +359,7 @@ const ICONS = {
 
 const INFOS = [
   {dir:'rtl', icon:'people', title:'الخدمات الشرعية والأسرية',
-   body:['عقد عقود الزواج والطلاق','الاستشارات الشرعية والأسرية','المساعدة في حل الخلافات الزوجية','<li class="plain warm">نحن هنا للاستماع إليكم وتقديم الدعم والتوجيه بما يحقق الخير والاستقرار للأسرة والمجتمع</li>'],
+   body:['عقود الزواج والطلاق','الاستشارات الشرعية والأسرية','المساعدة في حل الخلافات الزوجية','<li class="plain warm">نحن هنا للاستماع إليكم وتقديم الدعم والتوجيه بما يحقق الخير والاستقرار للأسرة والمجتمع</li>'],
    lab:'للتواصل وحجز موعد – واتساب', phone:'0152 1294 2508', qr:'<svg viewBox="0 0 31 31" shape-rendering="crispEdges"><rect width="31" height="31" fill="#fff"/><path d="M1,1h1v1h-1zM2,1h1v1h-1zM3,1h1v1h-1zM4,1h1v1h-1zM5,1h1v1h-1zM6,1h1v1h-1zM7,1h1v1h-1zM10,1h1v1h-1zM13,1h1v1h-1zM16,1h1v1h-1zM17,1h1v1h-1zM20,1h1v1h-1zM23,1h1v1h-1zM24,1h1v1h-1zM25,1h1v1h-1zM26,1h1v1h-1zM27,1h1v1h-1zM28,1h1v1h-1zM29,1h1v1h-1zM1,2h1v1h-1zM7,2h1v1h-1zM10,2h1v1h-1zM11,2h1v1h-1zM12,2h1v1h-1zM13,2h1v1h-1zM21,2h1v1h-1zM23,2h1v1h-1zM29,2h1v1h-1zM1,3h1v1h-1zM3,3h1v1h-1zM4,3h1v1h-1zM5,3h1v1h-1zM7,3h1v1h-1zM9,3h1v1h-1zM10,3h1v1h-1zM11,3h1v1h-1zM15,3h1v1h-1zM17,3h1v1h-1zM19,3h1v1h-1zM23,3h1v1h-1zM25,3h1v1h-1zM26,3h1v1h-1zM27,3h1v1h-1zM29,3h1v1h-1zM1,4h1v1h-1zM3,4h1v1h-1zM4,4h1v1h-1zM5,4h1v1h-1zM7,4h1v1h-1zM9,4h1v1h-1zM10,4h1v1h-1zM12,4h1v1h-1zM13,4h1v1h-1zM17,4h1v1h-1zM18,4h1v1h-1zM19,4h1v1h-1zM20,4h1v1h-1zM21,4h1v1h-1zM23,4h1v1h-1zM25,4h1v1h-1zM26,4h1v1h-1zM27,4h1v1h-1zM29,4h1v1h-1zM1,5h1v1h-1zM3,5h1v1h-1zM4,5h1v1h-1zM5,5h1v1h-1zM7,5h1v1h-1zM9,5h1v1h-1zM12,5h1v1h-1zM13,5h1v1h-1zM14,5h1v1h-1zM15,5h1v1h-1zM16,5h1v1h-1zM20,5h1v1h-1zM23,5h1v1h-1zM25,5h1v1h-1zM26,5h1v1h-1zM27,5h1v1h-1zM29,5h1v1h-1zM1,6h1v1h-1zM7,6h1v1h-1zM9,6h1v1h-1zM10,6h1v1h-1zM11,6h1v1h-1zM13,6h1v1h-1zM14,6h1v1h-1zM15,6h1v1h-1zM16,6h1v1h-1zM17,6h1v1h-1zM18,6h1v1h-1zM19,6h1v1h-1zM23,6h1v1h-1zM29,6h1v1h-1zM1,7h1v1h-1zM2,7h1v1h-1zM3,7h1v1h-1zM4,7h1v1h-1zM5,7h1v1h-1zM6,7h1v1h-1zM7,7h1v1h-1zM9,7h1v1h-1zM11,7h1v1h-1zM13,7h1v1h-1zM15,7h1v1h-1zM17,7h1v1h-1zM19,7h1v1h-1zM21,7h1v1h-1zM23,7h1v1h-1zM24,7h1v1h-1zM25,7h1v1h-1zM26,7h1v1h-1zM27,7h1v1h-1zM28,7h1v1h-1zM29,7h1v1h-1zM9,8h1v1h-1zM11,8h1v1h-1zM12,8h1v1h-1zM14,8h1v1h-1zM16,8h1v1h-1zM19,8h1v1h-1zM20,8h1v1h-1zM1,9h1v1h-1zM3,9h1v1h-1zM4,9h1v1h-1zM5,9h1v1h-1zM6,9h1v1h-1zM7,9h1v1h-1zM11,9h1v1h-1zM13,9h1v1h-1zM15,9h1v1h-1zM16,9h1v1h-1zM18,9h1v1h-1zM19,9h1v1h-1zM21,9h1v1h-1zM23,9h1v1h-1zM24,9h1v1h-1zM25,9h1v1h-1zM26,9h1v1h-1zM27,9h1v1h-1zM1,10h1v1h-1zM2,10h1v1h-1zM4,10h1v1h-1zM6,10h1v1h-1zM9,10h1v1h-1zM13,10h1v1h-1zM16,10h1v1h-1zM17,10h1v1h-1zM20,10h1v1h-1zM22,10h1v1h-1zM23,10h1v1h-1zM24,10h1v1h-1zM25,10h1v1h-1zM29,10h1v1h-1zM1,11h1v1h-1zM2,11h1v1h-1zM3,11h1v1h-1zM4,11h1v1h-1zM5,11h1v1h-1zM7,11h1v1h-1zM8,11h1v1h-1zM9,11h1v1h-1zM10,11h1v1h-1zM21,11h1v1h-1zM24,11h1v1h-1zM25,11h1v1h-1zM1,12h1v1h-1zM2,12h1v1h-1zM4,12h1v1h-1zM5,12h1v1h-1zM6,12h1v1h-1zM8,12h1v1h-1zM9,12h1v1h-1zM12,12h1v1h-1zM13,12h1v1h-1zM15,12h1v1h-1zM17,12h1v1h-1zM24,12h1v1h-1zM26,12h1v1h-1zM28,12h1v1h-1zM1,13h1v1h-1zM5,13h1v1h-1zM6,13h1v1h-1zM7,13h1v1h-1zM8,13h1v1h-1zM9,13h1v1h-1zM12,13h1v1h-1zM17,13h1v1h-1zM18,13h1v1h-1zM19,13h1v1h-1zM21,13h1v1h-1zM22,13h1v1h-1zM26,13h1v1h-1zM27,13h1v1h-1zM1,14h1v1h-1zM3,14h1v1h-1zM4,14h1v1h-1zM8,14h1v1h-1zM9,14h1v1h-1zM10,14h1v1h-1zM13,14h1v1h-1zM14,14h1v1h-1zM15,14h1v1h-1zM16,14h1v1h-1zM20,14h1v1h-1zM22,14h1v1h-1zM23,14h1v1h-1zM24,14h1v1h-1zM25,14h1v1h-1zM29,14h1v1h-1zM1,15h1v1h-1zM2,15h1v1h-1zM3,15h1v1h-1zM6,15h1v1h-1zM7,15h1v1h-1zM8,15h1v1h-1zM9,15h1v1h-1zM11,15h1v1h-1zM14,15h1v1h-1zM15,15h1v1h-1zM16,15h1v1h-1zM17,15h1v1h-1zM19,15h1v1h-1zM23,15h1v1h-1zM26,15h1v1h-1zM27,15h1v1h-1zM1,16h1v1h-1zM2,16h1v1h-1zM3,16h1v1h-1zM4,16h1v1h-1zM8,16h1v1h-1zM14,16h1v1h-1zM16,16h1v1h-1zM19,16h1v1h-1zM20,16h1v1h-1zM23,16h1v1h-1zM24,16h1v1h-1zM28,16h1v1h-1zM2,17h1v1h-1zM6,17h1v1h-1zM7,17h1v1h-1zM8,17h1v1h-1zM10,17h1v1h-1zM11,17h1v1h-1zM12,17h1v1h-1zM13,17h1v1h-1zM15,17h1v1h-1zM16,17h1v1h-1zM18,17h1v1h-1zM19,17h1v1h-1zM21,17h1v1h-1zM22,17h1v1h-1zM26,17h1v1h-1zM27,17h1v1h-1zM1,18h1v1h-1zM3,18h1v1h-1zM5,18h1v1h-1zM9,18h1v1h-1zM11,18h1v1h-1zM12,18h1v1h-1zM16,18h1v1h-1zM17,18h1v1h-1zM18,18h1v1h-1zM20,18h1v1h-1zM23,18h1v1h-1zM25,18h1v1h-1zM27,18h1v1h-1zM29,18h1v1h-1zM1,19h1v1h-1zM3,19h1v1h-1zM4,19h1v1h-1zM7,19h1v1h-1zM8,19h1v1h-1zM9,19h1v1h-1zM10,19h1v1h-1zM11,19h1v1h-1zM12,19h1v1h-1zM13,19h1v1h-1zM19,19h1v1h-1zM21,19h1v1h-1zM24,19h1v1h-1zM25,19h1v1h-1zM27,19h1v1h-1zM1,20h1v1h-1zM3,20h1v1h-1zM4,20h1v1h-1zM6,20h1v1h-1zM8,20h1v1h-1zM11,20h1v1h-1zM12,20h1v1h-1zM15,20h1v1h-1zM17,20h1v1h-1zM19,20h1v1h-1zM21,20h1v1h-1zM22,20h1v1h-1zM25,20h1v1h-1zM28,20h1v1h-1zM1,21h1v1h-1zM5,21h1v1h-1zM6,21h1v1h-1zM7,21h1v1h-1zM12,21h1v1h-1zM13,21h1v1h-1zM17,21h1v1h-1zM19,21h1v1h-1zM21,21h1v1h-1zM22,21h1v1h-1zM23,21h1v1h-1zM24,21h1v1h-1zM25,21h1v1h-1zM27,21h1v1h-1zM28,21h1v1h-1zM29,21h1v1h-1zM9,22h1v1h-1zM11,22h1v1h-1zM14,22h1v1h-1zM15,22h1v1h-1zM16,22h1v1h-1zM18,22h1v1h-1zM19,22h1v1h-1zM20,22h1v1h-1zM21,22h1v1h-1zM25,22h1v1h-1zM26,22h1v1h-1zM27,22h1v1h-1zM28,22h1v1h-1zM29,22h1v1h-1zM1,23h1v1h-1zM2,23h1v1h-1zM3,23h1v1h-1zM4,23h1v1h-1zM5,23h1v1h-1zM6,23h1v1h-1zM7,23h1v1h-1zM11,23h1v1h-1zM14,23h1v1h-1zM15,23h1v1h-1zM16,23h1v1h-1zM17,23h1v1h-1zM18,23h1v1h-1zM20,23h1v1h-1zM21,23h1v1h-1zM23,23h1v1h-1zM25,23h1v1h-1zM26,23h1v1h-1zM27,23h1v1h-1zM1,24h1v1h-1zM7,24h1v1h-1zM9,24h1v1h-1zM10,24h1v1h-1zM11,24h1v1h-1zM12,24h1v1h-1zM14,24h1v1h-1zM16,24h1v1h-1zM18,24h1v1h-1zM19,24h1v1h-1zM21,24h1v1h-1zM25,24h1v1h-1zM29,24h1v1h-1zM1,25h1v1h-1zM3,25h1v1h-1zM4,25h1v1h-1zM5,25h1v1h-1zM7,25h1v1h-1zM9,25h1v1h-1zM12,25h1v1h-1zM15,25h1v1h-1zM16,25h1v1h-1zM21,25h1v1h-1zM22,25h1v1h-1zM23,25h1v1h-1zM24,25h1v1h-1zM25,25h1v1h-1zM27,25h1v1h-1zM28,25h1v1h-1zM29,25h1v1h-1zM1,26h1v1h-1zM3,26h1v1h-1zM4,26h1v1h-1zM5,26h1v1h-1zM7,26h1v1h-1zM9,26h1v1h-1zM10,26h1v1h-1zM11,26h1v1h-1zM12,26h1v1h-1zM16,26h1v1h-1zM17,26h1v1h-1zM19,26h1v1h-1zM20,26h1v1h-1zM22,26h1v1h-1zM26,26h1v1h-1zM27,26h1v1h-1zM1,27h1v1h-1zM3,27h1v1h-1zM4,27h1v1h-1zM5,27h1v1h-1zM7,27h1v1h-1zM9,27h1v1h-1zM11,27h1v1h-1zM13,27h1v1h-1zM15,27h1v1h-1zM19,27h1v1h-1zM23,27h1v1h-1zM24,27h1v1h-1zM25,27h1v1h-1zM26,27h1v1h-1zM27,27h1v1h-1zM28,27h1v1h-1zM1,28h1v1h-1zM7,28h1v1h-1zM13,28h1v1h-1zM15,28h1v1h-1zM17,28h1v1h-1zM20,28h1v1h-1zM21,28h1v1h-1zM22,28h1v1h-1zM23,28h1v1h-1zM24,28h1v1h-1zM26,28h1v1h-1zM28,28h1v1h-1zM1,29h1v1h-1zM2,29h1v1h-1zM3,29h1v1h-1zM4,29h1v1h-1zM5,29h1v1h-1zM6,29h1v1h-1zM7,29h1v1h-1zM9,29h1v1h-1zM10,29h1v1h-1zM12,29h1v1h-1zM13,29h1v1h-1zM17,29h1v1h-1zM19,29h1v1h-1zM24,29h1v1h-1zM25,29h1v1h-1zM26,29h1v1h-1zM27,29h1v1h-1z" fill="#00472A"/></svg>', scan:'امسح الرمز للمراسلة عبر واتساب'},
   {dir:'rtl', icon:'book', title:'المدرسة القرآنية',
    body:['<li class="plain">التسجيل في المدرسة القرآنية ومجموعات تعليم القرآن الكريم</li>'],
@@ -383,8 +385,9 @@ const RENDER = Q.has('render');
 const DURATION = 54;                       // video length (s)
 const SIM_START = Q.get('sim') ? new Date(Q.get('sim')) : new Date(2026,10,21,16,24,10); // Samstag 21.11.2026, 16:24:10
 const SAMPLE_TIMES = {fajr:'05:37',sunrise:'07:39',dhuhr:'11:54',asr:'13:44',maghrib:'16:06',isha:'18:01'}; // Berlin, MWL – sample only
-const INFO_PERIOD = 9, INFO_TRANS = 1.0;   // left column
-const ROLL_STEP = 5.6, ROLL_MOVE = 1.15;   // right column
+const SLIDE = 15;                          // left card and right day change together, every 15 s
+const INFO_PERIOD = SLIDE, INFO_TRANS = 1.0;
+const ROLL_STEP = SLIDE, ROLL_MOVE = 1.15;
 
 const pad = n => String(n).padStart(2,'0');
 const toMin = s => {const [h,m]=s.split(':').map(Number); return h*60+m;};
@@ -470,8 +473,11 @@ function chipHTML(it, isRight){
   if (it.todo) return `<div class="chip arc todo">الوقت يُعلن لاحقاً</div>`;
   if (it.after) return `<div class="chip arc">بعد صلاة ${PRAYERS.find(p=>p[0]===it.after)[1]}</div>`;
   if (it.at) return `<div class="chip num">${it.at}</div>`;
-  if (it.slots.length===2) return `<div class="chip num"><span class="two">${it.slots[0].join('–')}</span><span class="two">${it.slots[1].join('–')}</span></div>`;
-  return `<div class="chip num">${it.slots[0].join('–')}</div>`;
+  // Arabic items: the range runs right-to-left, so the start time stands on the right (١٢:٠٠–٠٩:٠٠ reads 09:00 first)
+  const rtl = it.dir === 'rtl', cls = rtl ? 'chip num rtlt' : 'chip num';
+  const range = sl => rtl ? `<bdi>${sl[0]}</bdi>–<bdi>${sl[1]}</bdi>` : sl.join('–');
+  if (it.slots.length===2) return `<div class="${cls}"><span class="two">${range(it.slots[0])}</span><span class="two">${range(it.slots[1])}</span></div>`;
+  return `<div class="${cls}">${range(it.slots[0])}</div>`;
 }
 function subHTML(it){
   if (it.gloss) return `<div class="s gloss">${it.gloss}</div>`;
@@ -606,11 +612,12 @@ function render(t, now){
   document.querySelectorAll('#prog b').forEach((b,i) => { b.style.width = (i<idx?100: i===idx? 100*clamp01(local/INFO_PERIOD) : 0)+'%'; });
 
   // right: step roll
-  const S = OFFS.length, k = Math.floor(t/ROLL_STEP), lk = t - k*ROLL_STEP, j = k % S;
-  const m = ease((lk-(ROLL_STEP-ROLL_MOVE))/ROLL_MOVE);
-  const a = OFFS[j].y, b = j+1 < S ? OFFS[j+1].y : OFFS.endY;
+  // moves at the START of each 15-s step – the same moment the left card changes
+  const S = OFFS.length, k = Math.floor(t/ROLL_STEP), lk = t - k*ROLL_STEP, j = k % S, pj = (j - 1 + S) % S;
+  const m = k === 0 ? 1 : ease(lk/ROLL_MOVE);
+  const a = k === 0 ? 0 : OFFS[pj].y, b = (j === 0 && k > 0) ? OFFS.endY : OFFS[j].y;   // last → first runs into the copy: seamless
   document.getElementById('roll').style.transform = `translateY(${-(a+(b-a)*m)}px)`;
-  const active = m > .5 ? (j+1 < S ? OFFS[j+1].day : 0) : OFFS[j].day;
+  const active = m > .5 ? OFFS[j].day : OFFS[pj].day;
   document.querySelectorAll('#strip span').forEach((s,i)=>s.classList.toggle('on', i===active));
 
   // video fade in/out
