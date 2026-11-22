@@ -150,6 +150,7 @@ header .logoR{height:80px;width:auto}
 .pt.past{opacity:.5}
 .pt.sun .tm{font-size:36px;color:var(--sage-l)}
 .pt.next{background:linear-gradient(180deg,var(--gold-l),var(--gold));border-color:#FFF1C2;color:var(--ink)}
+.pt.next.sun .tm{color:var(--ink)}
 .pt.next .an{color:var(--g9)} .pt.next .dn{color:rgba(22,48,31,.7)} .pt.next .iq{color:var(--gold-d)}
 .nextbar{margin-top:10px;height:62px;border-radius:18px;background:rgba(0,0,0,.20);border:2px solid rgba(243,213,126,.45);display:flex;align-items:center;justify-content:space-between;padding:0 22px}
 .nextbar .de{font-size:25px;font-weight:700;color:var(--sage-l)}
@@ -157,6 +158,9 @@ header .logoR{height:80px;width:auto}
 .nextbar .cd{font-size:44px;font-weight:850;color:var(--gold-l);letter-spacing:1px}
 .nextbar .ar{font-size:26px;font-weight:700;color:var(--sage-l)}
 .nextbar .ar b{color:#fff;font-weight:850;font-family:var(--kufi);font-size:24px}
+.nextbar.iqama{background:linear-gradient(180deg,var(--gold-l),var(--gold));border-color:#FFF1C2}
+.nextbar.iqama .de,.nextbar.iqama .ar{color:var(--g8)}
+.nextbar.iqama .de b,.nextbar.iqama .ar b,.nextbar.iqama .cd{color:var(--g9)}
 .ptnote{margin-top:4px;text-align:right;font-size:16px;font-weight:600;color:rgba(255,255,255,.5);height:20px}
 .proghead{margin-top:4px;display:flex;align-items:center;gap:16px;font-size:26px;font-weight:800;color:var(--gold-l)}
 .proghead .line{flex:1;height:2px;background:linear-gradient(90deg,rgba(243,213,126,.6),rgba(243,213,126,.1))}
@@ -275,9 +279,9 @@ header .logoR{height:80px;width:auto}
       </div>
       <div class="prayers" id="prayers"></div>
       <div class="nextbar">
-        <div class="de">Nächstes Gebet: <b id="nbDe">Isha</b></div>
+        <div class="de" id="nbDe">Nächstes Gebet: <b>Isha</b></div>
         <div class="cd num" id="cd">01:36:50</div>
-        <div class="ar" dir="rtl"><b id="nbAr">العشاء</b> بعد</div>
+        <div class="ar" id="nbAr" dir="rtl"><b>العشاء</b> بعد</div>
       </div>
       <div class="ptnote" id="ptnote">Beispielzeiten im Entwurf · später live aus MAWAQIT</div>
       <div class="proghead"><span>Programm heute</span><span class="line"></span><span class="ar" dir="rtl">برنامج اليوم</span></div>
@@ -492,7 +496,7 @@ function build(now){
   const hij = new Date(now.getTime() + ((MQ && +MQ.hijriAdjustment) || 0) * 86400000);   // the mosque's own Hijri correction
   document.getElementById('hdate').textContent = new Intl.DateTimeFormat('ar-SA-u-ca-islamic-umalqura-nu-latn',{day:'numeric',month:'long',year:'numeric'}).format(hij);
   document.getElementById('ptnote').textContent = sourceNote();
-  render.sig = null;
+  render.sig = null; render.psig = null;
 
   // prayers
   document.getElementById('prayers').innerHTML = PRAYERS.map(([k]) => { const [ar,de] = PNAME(k);
@@ -539,20 +543,35 @@ function render(t, now){
   document.getElementById('ss').textContent = pad(now.getSeconds());
 
   // prayers: past / next + countdown
+  // three phases:  adhan → iqama   |   after Fajr's iqama → Shuruq   |   otherwise → next adhan
   const keys = ['fajr','dhuhr','asr','maghrib','isha'];
-  let nextK = keys.find(k => PT[k] > nowMin) || 'fajr';
+  let ph = null;
+  for (const k of keys) {
+    if (k === 'dhuhr' && PT.jumua && PT.jumua.length) continue;            // Jumu'a: no iqama countdown
+    if (nowMin >= PT[k] && nowMin < PT.iq[k]) { ph = {mode:'iqama', k, target:PT.iq[k]}; break; }
+  }
+  if (!ph && nowMin >= PT.iq.fajr && nowMin < PT.sunrise) ph = {mode:'shuruq', k:'sunrise', target:PT.sunrise};
+  if (!ph) { const k = keys.find(k => PT[k] > nowMin);
+    ph = k ? {mode:'next', k, target:PT[k]} : {mode:'next', k:'fajr', target:PT.fajrNext + 1440}; }   // after Isha: tomorrow's Fajr
   document.querySelectorAll('.pt').forEach(el => {
     const k = el.dataset.k;
-    el.classList.toggle('next', k===nextK);
-    el.classList.toggle('past', k!==nextK && PT[k] <= nowMin);
+    el.classList.toggle('next', k === ph.k);
+    el.classList.toggle('past', k !== ph.k && PT[k] <= nowMin);
   });
-  let diff = PT[nextK] - nowMin; if (diff < 0) diff = PT.fajrNext + 1440 - nowMin;   // after Isha: tomorrow's Fajr
-  const secs = Math.max(0, Math.round(diff*60));
-  document.getElementById('cd').textContent = pad(Math.floor(secs/3600))+':'+pad(Math.floor(secs/60)%60)+':'+pad(secs%60);
-  const [nAr, nDe] = PNAME(nextK);
-  document.getElementById('nbDe').textContent = nDe;
-  document.getElementById('nbAr').textContent = nAr;
+  const secs = Math.max(0, Math.ceil((ph.target - nowMin)*60 - 1e-6));
+  const hh = Math.floor(secs/3600), mmss = pad(Math.floor(secs/60)%60) + ':' + pad(secs%60);
+  document.getElementById('cd').textContent = hh ? pad(hh) + ':' + mmss : mmss;          // under 1 h: MM:SS
+  const psig = ph.mode + ph.k;
+  if (psig !== render.psig) { render.psig = psig;                                        // labels only change with the phase
+    const [nAr, nDe] = PNAME(ph.k);
+    const L = { next:   [`Nächstes Gebet: <b>${nDe}</b>`, `<b>${nAr}</b> بعد`],
+                iqama:  [`Iqama <b>${nDe}</b> in`,        `إقامة <b>${nAr}</b> بعد`],
+                shuruq: [`<b>Schurūq</b> in`,             `<b>الشروق</b> بعد`] }[ph.mode];
+    document.getElementById('nbDe').innerHTML = L[0];
+    document.getElementById('nbAr').innerHTML = L[1];
+    document.querySelector('.nextbar').classList.toggle('iqama', ph.mode === 'iqama'); }
   const pulse = .5 + .5*Math.sin(t*2*Math.PI/2.4);
+  document.querySelector('.nextbar').style.boxShadow = ph.mode === 'iqama' ? `0 0 ${14+16*pulse}px rgba(243,213,126,${.3+.4*pulse})` : 'none';
   const nt = document.querySelector('.pt.next');
   if (nt) nt.style.boxShadow = `0 0 ${18+18*pulse}px rgba(243,213,126,${.35+.35*pulse})`;
 
